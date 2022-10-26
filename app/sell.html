@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logistics Application</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.1/ethers.umd.js"
+    type="application/javascript"></script>
+  <script>
+    let Seller;
+    let SellerContractAddress;
+    let SellerContractABI;
+    let signer;
+    let provider;
+    let accounts;
+
+    async function add() {
+      const name = document.getElementById("name").value;
+      const pp = document.getElementById("pprice").value;
+      const desc = document.getElementById("desc").value;
+      console.log(pp.toString());
+      await Seller.addProduct(name, desc, pprice); // {value: bigAmount}
+      alert("Products added successfully.");
+
+    }
+
+    async function requestQuote() {
+      const PID = document.getElementById("pid").value;
+      console.log(await Seller.requestQuote(PID));
+      alert("Here is your quote!");
+    }
+
+    async function Buy() {
+      const pid = document.getElementById("p_id").value;
+      const buyer = document.getElementById("buyer").value;
+      const name = document.getElementById("_name").value;
+      const addr = document.getElementById("addr").value;
+      await Seller.Buy(pid, buyer, name, addr);
+      alert("Order added successfully.");
+    }
+
+    async function sendInvoice() {
+      const oid = document.getElementById("_orderid").value;
+      await Seller.sendInvoice(oid);
+      alert("Yay! Invoice sent successfully.");
+    }
+
+    function test() {
+      event.preventDefault();
+    }
+
+    async function doInitMetamask() {
+      SellerContractAddress = "0x43688BFA17af954C3a72e571502C9F3A7fAb296a";
+      SellerContractABI = [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "Ods",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "Productid",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "Orderid",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "address",
+          "name": "addr",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "odd",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "pprice",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "Products",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "desc",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "sold",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "pprice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "buyer",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "products_list",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "id",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "desc",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "sold",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "pprice",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "buyer",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "desc",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "pprice",
+          "type": "uint256"
+        }
+      ],
+      "name": "addProduct",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_ProductID",
+          "type": "uint256"
+        }
+      ],
+      "name": "requestQuote",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "pID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "_Buyer",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "_name",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_address",
+          "type": "string"
+        },
+        {
+          "internalType": "uint40",
+          "name": "_phone",
+          "type": "uint40"
+        }
+      ],
+      "name": "Buy",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "oid",
+          "type": "uint256"
+        }
+      ],
+      "name": "fv",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "orderid",
+          "type": "uint256"
+        }
+      ],
+      "name": "sendInvoice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ]
+
+
+      
+      // provider = new ethers.providers.Web3Provider(web3.currentProvider);
+      provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+
+      try {
+        await provider.send("eth_requestAccounts", []);
+      } catch {
+        console.log("Connection error");
+      }
+
+      accounts = await provider.listAccounts();
+      console.log(accounts);
+
+      signer = await provider.getSigner(accounts[0]);
+      console.log(signer);
+
+
+      console.log(SellerContractAddress);
+      console.log(SellerContractABI);
+
+      Seller = new ethers.Contract(SellerContractAddress, SellerContractABI, signer);
+    }
+    doInitMetamask();
+  </script>
+</head>
+<link rel="stylesheet" href="style.css">
+
+<body>
+    <header>
+        <div class="main">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="Buyer.html">Buy</a></li>
+                <li class="active"><a href="#">Sell</a></li>
+                <li><a href="freight.html">Freight</a></li>
+            </ul>
+        </div>
+        <div class="Row">
+            <div class="card">
+                <div class="inner-box">
+                    <h2> Add Product</h2>
+                    <form>
+                        <input type="ProductID" class="input-box"  placeholder="Product Name" /><br>
+                        <input type="Name"  class="input-box" placeholder="Description" /><br>
+                        <input type="Delivery addr"  class="input-box" placeholder="Price" /><br>
+                        <button class="submit-btn" onclick="add();test()">Send</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card">
+                <div class="inner-box">
+                    <h2>Request Quote</h2>
+                     <input type="ProductId" class="input-box" placeholder="product id" />
+                     <button class="submit-btn" onclick="requestQuote();test()">Request</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="inner-box">
+                    <h2>Get Invoice</h2>
+                        <input type="OrderId" class="input-box" placeholder="enter order id" />
+                        <button class="submit-btn" onclick="getInvoice();test()">Send</button>
+                </div>
+            </div>
+            </div>
+        
+    </header>
+</body>
+</html>
